@@ -45,6 +45,7 @@
                         <div class="card my-2">
                             <img src="{{photo.Image.url}}" class="image-thumbail" alt="...">
                             <div class="card-body">
+                            {{photo.Category.name}}
                         
                             </div>
                             <a href="{% url 'photo' photo.id %}" class="btn btn-outline-dark btn-sm m-1">View</a>

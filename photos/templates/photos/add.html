@@ -27,16 +27,17 @@
 
                         <div class="form-group m-4">
                             <label >Select a Category</label><br>
-                            <select name="category" type="Category" class="form-control">
-                            <option value='none'>  Select a category... </option>                            
-                            {% for category in categories % }
+                            <select name="category" class="form-control">
+                            <option value='none'>  Select a category.... </option>
+                            {% for category in categories %} 
                             <option value='{{category.id}}'>  {{category.name}} </option>
-                                 { % endfor % }
+                            {% endfor %} 
+                        
                             </select>
                         </div>
                         <div class="form-group m-4">
                             <label >Creat new category</label><br>
-                            <input type="category_new" placeholder="Creat a new category" class="form-control">
+                            <input name="category_new" placeholder="Creat a new category" class="form-control">
                         </div>
 
                         <div class="form-group m-4">
