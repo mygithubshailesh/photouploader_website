@@ -1,10 +1,19 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,HttpResponseRedirect
 from .models import Category,Photo
+from .forms import Sing_up,LoginForm
+from django.contrib import messages
+from django.contrib.auth import authenticate, login, logout
 
 # Create your views here.
 def gallery(request):
+    category = request.GET.get('category')
+    if category == None:
+         photos = Photo.objects.all()
+    else:
+        photos = Photo.objects.filter(Category__name =category) 
+    
     categories = Category.objects.all()
-    photos = Photo.objects.all()
+   
     contex = {'categories':categories,'photos':photos}
     return render(request,'photos/gallery.html',contex)
 
@@ -26,13 +35,38 @@ def addphoto(request):
             category = None
 
         photo = Photo.objects.create(
-                    category = Category,
+                    Category = category,
                     description = data['description'],
-                    image = image)
+                    Image =   image)
     
         return redirect ('gallery')
-      
-        """print("data:",data)
-        print("image:",image)"""
     contex = {'categories':categories}
     return render(request,'photos/add.html',contex)
+
+def signup(request):
+     if request.method == "POST":
+          fm = Sing_up(request.POST)
+          if fm.is_valid():
+            fm.save()
+            return HttpResponseRedirect ("/login/")
+     else:
+          fm = Sing_up()
+     return render(request,'photos/signup.html',{'fm':fm})
+
+def user_login(request):
+     if request.method == "POST":
+          form = LoginForm(request=request, data=request.POST)
+          if form.is_valid():
+            uname = form.cleaned_data['username']
+            upass = form.cleaned_data['password']
+            user = authenticate(username=uname, password=upass)
+            if user is not None:
+                login(request, user)
+                messages.success(request, 'Logged in Successfully !!')
+                return HttpResponseRedirect('/')
+     else:
+        form = LoginForm()
+     return render(request, 'photos/login.html', {'form':form})
+            
+
+     
