@@ -19,29 +19,33 @@ def gallery(request):
 
 def viewphotos(request, pk):
     photos = Photo.objects.get(id=pk)
+      
     return render(request,'photos/photos.html',{'photo':photos})
 
 def addphoto(request):
-    categories = Category.objects.all()
-    if request.method == 'POST':
-        data = request.POST
-        image = request.FILES.get('image')
-        if data['category'] != 'none':
-            category = Category.objects.get(id=data['category'])
-            print(category)
-        elif data ['category_new'] != '':
-                category,created = Category.objects.get_or_create(name = data['category_new'])
-        else :
-            category = None
+   if request.user.is_authenticated:
+        categories = Category.objects.all()
+        if request.method == 'POST':
+            data = request.POST
+            image = request.FILES.get('image')
+            if data['category'] != 'none':
+                category = Category.objects.get(id=data['category'])
+                print(category)
+            elif data ['category_new'] != '':
+                    category,created = Category.objects.get_or_create(name = data['category_new'])
+            else :
+                category = None
 
-        photo = Photo.objects.create(
-                    Category = category,
-                    description = data['description'],
-                    Image =   image)
-    
-        return redirect ('gallery')
-    contex = {'categories':categories}
-    return render(request,'photos/add.html',contex)
+            photo = Photo.objects.create(
+                        Category = category,
+                        description = data['description'],
+                        Image =   image)
+        
+            return redirect ('gallery')
+        contex = {'categories':categories}
+        return render(request,'photos/add.html',contex)
+   else:
+       return HttpResponseRedirect('/signup/')
 
 def signup(request):
      if request.method == "POST":
@@ -67,6 +71,20 @@ def user_login(request):
      else:
         form = LoginForm()
      return render(request, 'photos/login.html', {'form':form})
+
+
+def user_logout(request):
+ logout(request)
+ return HttpResponseRedirect('/')
+
+def delete_photo(request, id):
+  if request.user.is_authenticated:
+    if request.method == 'POST':
+      pi = Photo.objects.get(pk=id)
+      pi.delete()
+      return HttpResponseRedirect('/')
+  else:
+    return HttpResponseRedirect('/login/')
             
 
      
